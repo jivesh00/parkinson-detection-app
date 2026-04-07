@@ -1,27 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
+    <title>Parkinson Detection</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>Welcome to Parkinson Detection</h1>
 
-    <form action="/predict" method="post">
-        <input type="text" name="name" placeholder="Name" required><br>
-        <input type="text" name="age" placeholder="Age" required><br>
-        <input type="text" name="sex" placeholder="Sex" required><br>
-        <input type="text" name="weight" placeholder="Weight" required><br>
-        <input type="text" name="address" placeholder="Address" required><br>
+<h1>Parkinson Detection</h1>
 
-        <input type="text" name="bmi" placeholder="BMI" required><br>
-        <input type="text" name="sleep" placeholder="Sleep" required><br>
-        <input type="text" name="chol" placeholder="Cholesterol" required><br>
-        <input type="text" name="dep" placeholder="Depression" required><br>
-        <input type="text" name="post" placeholder="Postural" required><br>
+<form action="/predict" method="post">
+    <input name="name" placeholder="Name"><br>
+    <input name="age" placeholder="Age"><br>
+    <input name="sex" placeholder="Sex"><br>
+    <input name="weight" placeholder="Weight"><br>
+    <input name="address" placeholder="Address"><br><br>
 
-        <button type="submit">Predict</button>
-    </form>
+    <input name="bmi" placeholder="BMI"><br>
+    <input name="sleep" placeholder="Sleep"><br>
+    <input name="chol" placeholder="Cholesterol"><br>
+    <input name="dep" placeholder="Depression"><br>
+    <input name="post" placeholder="Postural"><br><br>
 
-    <a href="/logout">Logout</a>
+    <button type="submit">Predict</button>
+</form>
+
+<h2>{{ prediction_text }}</h2>
+
+<canvas id="chart"></canvas>
+
+<script>
+var dataValues = {{ data | tojson if data else '{}' }};
+
+if (Object.keys(dataValues).length > 0) {
+    new Chart(document.getElementById("chart"), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(dataValues),
+            datasets: [{
+                label: "Health Data",
+                data: Object.values(dataValues)
+            }]
+        }
+    });
+}
+</script>
+
+<br>
+<a href="/download">Download Report</a><br>
+<a href="/history">View History</a><br>
+<a href="/doctor">Doctor Suggestions</a><br>
+<a href="/logout">Logout</a>
+
 </body>
 </html>
