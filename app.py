@@ -88,7 +88,9 @@ def signup():
 def home():
     if "user" in session:
         return render_template("index.html")
-    return redirect("/")
+   @app.route("/home")
+def home():
+    return render_template("index.html"))
 
 # ---------------- PREDICT ----------------
 @app.route("/predict", methods=["POST"])
