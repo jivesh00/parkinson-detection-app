@@ -1,0 +1,114 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #e0f7fa, #ffffff);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Header */
+h1 {
+    background-color: #0077b6;
+    color: white;
+    padding: 15px;
+    margin: 0;
+}
+
+/* Form box */
+form {
+    background: white;
+    padding: 20px;
+    margin: 30px auto;
+    width: 60%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px gray;
+}
+
+/* Inputs */
+input {
+    width: 80%;
+    padding: 10px;
+    margin: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Buttons */
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #0077b6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #023e8a;
+}
+
+/* Result box */
+h2 {
+    color: green;
+}
+
+h3 {
+    color: #333;
+}
+
+/* Patient report box */
+.report-box {
+    background: #f1f1f1;
+    padding: 15px;
+    margin: 20px auto;
+    width: 50%;
+    border-radius: 10px;
+}
+
+/* Chart */
+canvas {
+    margin-top: 20px;
+}
+
+/* Chatbot */
+#chatbox {
+    width: 60%;
+    margin: 20px auto;
+    padding: 10px;
+    height: 200px;
+    overflow-y: scroll;
+    background: #fff;
+    border: 1px solid #ccc;
+}
+
+/* Links */
+a button {
+    background-color: #0096c7;
+}
+
+a button:hover {
+    background-color: #0077b6;
+}
+
+/* Table for history */
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+table th {
+    background-color: #0077b6;
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}

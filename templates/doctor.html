@@ -1,0 +1,11 @@
+<h2>Recommended Doctors</h2>
+
+<ul>
+{% for doc in doctors %}
+    <li>
+        <b>{{ doc.name }}</b> - {{ doc.type }} ({{ doc.city }})
+    </li>
+{% endfor %}
+</ul>
+
+<a href="/home">Back</a>
