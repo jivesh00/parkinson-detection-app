@@ -87,16 +87,16 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    values = [
-        float(request.form["bmi"]),
-        float(request.form["sleep"]),
-        float(request.form["chol"]),
-        float(request.form["dep"]),
-        float(request.form["post"])
-    ]
+    values_dict = {
+    "BMI": values[0],
+    "Sleep": values[1],
+    "Cholesterol": values[2],
+    "Depression": values[3],
+    "Postural": values[4]
+}
 
-    prediction = model.predict([values])
-    prob = model.predict_proba([values])
+    prediction = model.predict([values_dict])
+    prob = model.predict_proba([values_dict])
     confidence = round(max(prob[0]) * 100, 2)
 
     result = "Parkinson Detected" if prediction[0] == 1 else "Healthy"
@@ -116,6 +116,9 @@ def predict():
         str(confidence) + "%"
     ))
     conn.commit()
+    return render_template("index.html",
+                       prediction_text=result,
+                       data=values_dict)
     conn.close()
 
     session["report"] = {
@@ -124,7 +127,9 @@ def predict():
         "Confidence": str(confidence) + "%"
     }
 
-    return render_template("index.html", prediction_text=result)
+    return render_template("index.html",
+                       prediction_text=result,
+                       data=values_dict)
 
 @app.route("/download")
 def download():

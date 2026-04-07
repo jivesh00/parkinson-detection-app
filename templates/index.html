@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Parkinson Detection</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+     <title>Parkinson Detection</title>
+ </head>
 <body>
 
 <h1>Parkinson Detection</h1>
@@ -25,6 +25,7 @@
 </form>
 
 <h2>{{ prediction_text }}</h2>
+<canvas id="chart" width="400" height="200"></canvas>
 
 <canvas id="chart"></canvas>
 
@@ -50,6 +51,31 @@ if (Object.keys(dataValues).length > 0) {
 <a href="/history">View History</a><br>
 <a href="/doctor">Doctor Suggestions</a><br>
 <a href="/logout">Logout</a>
+<script>
+var dataValues = {{ data | tojson if data else '{}' }};
 
+if (Object.keys(dataValues).length > 0) {
+    const ctx = document.getElementById("chart").getContext("2d");
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(dataValues),
+            datasets: [{
+                label: "Health Data",
+                data: Object.values(dataValues)
+            }]
+        }
+    });
+}
+ <img src="{{ url_for('static', filename='images/bg.jpg') }}" width="300">
+</script>
+<h3>Voice Input</h3>
+<input type="text" id="voiceText" placeholder="Speak..." />
+<button onclick="startVoice()">🎤 Speak</button>
+<h3>Voice Input</h3>
+
+<input type="text" id="voiceText" placeholder="Speak..." />
+<button onclick="startVoice()">🎤 Speak</button>
 </body>
 </html>
