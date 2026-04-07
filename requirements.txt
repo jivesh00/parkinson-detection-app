@@ -1,7 +1,5 @@
-flask
-scikit-learn
-xgboost
-pandas
-numpy
-reportlab
+Flask
 gunicorn
+numpy
+scikit-learn
+reportlab

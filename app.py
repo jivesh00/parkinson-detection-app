@@ -11,7 +11,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# Load model
+# ---------------- LOAD MODEL ----------------
 model = pickle.load(open("model.pkl", "rb"))
 
 # ---------------- DATABASE ----------------
@@ -88,9 +88,7 @@ def signup():
 def home():
     if "user" in session:
         return render_template("index.html")
-   @app.route("/home")
-def home():
-    return render_template("index.html"))
+    return redirect("/")
 
 # ---------------- PREDICT ----------------
 @app.route("/predict", methods=["POST"])
@@ -109,7 +107,7 @@ def predict():
 
     result = "Parkinson Detected" if prediction[0] == 1 else "Healthy"
 
-    # Save patient
+    # Save to DB
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
     cur.execute("""
@@ -127,7 +125,7 @@ def predict():
     conn.commit()
     conn.close()
 
-    # Save session report
+    # Store report
     session["report"] = {
         "Name": request.form["name"],
         "Age": request.form["age"],
@@ -180,6 +178,8 @@ def chat():
         reply = "Tremors are common in Parkinson’s disease."
     elif "treatment" in msg:
         reply = "Consult a neurologist."
+    elif "hello" in msg:
+        reply = "Hello! How can I help you?"
     else:
         reply = random.choice([
             "Please consult a doctor.",
@@ -207,7 +207,5 @@ def logout():
     return redirect("/")
 
 # ---------------- RUN ----------------
-import os
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
