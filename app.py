@@ -2,18 +2,16 @@ from flask import Flask, render_template, request, redirect, session, send_file
 import pickle
 import sqlite3
 import random
+import os
 
-# Security
 from werkzeug.security import generate_password_hash, check_password_hash
-
-# PDF
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# Load ML model
+# Load model
 model = pickle.load(open("model.pkl", "rb"))
 
 # ---------------- DATABASE ----------------
@@ -21,7 +19,6 @@ def init_db():
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
 
-    # Users table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS users(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,7 +27,6 @@ def init_db():
     )
     """)
 
-    # Patients table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS patients(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -107,19 +103,11 @@ def predict():
 
     prediction = model.predict([values])
     prob = model.predict_proba([values])
-
     confidence = round(max(prob[0]) * 100, 2)
+
     result = "Parkinson Detected" if prediction[0] == 1 else "Healthy"
 
-    values_dict = {
-        "BMI": values[0],
-        "Sleep": values[1],
-        "Cholesterol": values[2],
-        "Depression": values[3],
-        "Postural": values[4]
-    }
-
-    # Save patient in DB
+    # Save patient
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
     cur.execute("""
@@ -137,7 +125,7 @@ def predict():
     conn.commit()
     conn.close()
 
-    # Save report for PDF
+    # Save session report
     session["report"] = {
         "Name": request.form["name"],
         "Age": request.form["age"],
@@ -148,27 +136,17 @@ def predict():
         "Confidence": str(confidence) + "%"
     }
 
-    return render_template(
-        "index.html",
-        prediction_text=result,
-        confidence=confidence,
-        name=request.form["name"],
-        age=request.form["age"],
-        sex=request.form["sex"],
-        weight=request.form["weight"],
-        address=request.form["address"],
-        data=values_dict
-    )
+    return render_template("index.html", prediction_text=result, confidence=confidence)
 
-# ---------------- PDF DOWNLOAD ----------------
+# ---------------- DOWNLOAD PDF ----------------
 @app.route("/download")
 def download():
     data = session.get("report")
 
     doc = SimpleDocTemplate("report.pdf")
     styles = getSampleStyleSheet()
-
     content = []
+
     content.append(Paragraph("Patient Report", styles["Title"]))
     content.append(Spacer(1, 10))
 
@@ -199,9 +177,7 @@ def chat():
     if "tremor" in msg:
         reply = "Tremors are common in Parkinson’s disease."
     elif "treatment" in msg:
-        reply = "Consult a neurologist for treatment."
-    elif "hello" in msg:
-        reply = "Hello! How can I help you?"
+        reply = "Consult a neurologist."
     else:
         reply = random.choice([
             "Please consult a doctor.",
@@ -215,9 +191,9 @@ def chat():
 @app.route("/doctor")
 def doctor():
     doctors = [
-        {"name": "Dr. Sharma", "type": "Neurologist", "city": "Delhi"},
-        {"name": "Dr. Patel", "type": "Neurologist", "city": "Mumbai"},
-        {"name": "Dr. Reddy", "type": "Neurologist", "city": "Hyderabad"}
+        {"name": "Dr. Sharma", "city": "Delhi"},
+        {"name": "Dr. Patel", "city": "Mumbai"},
+        {"name": "Dr. Reddy", "city": "Hyderabad"}
     ]
 
     return render_template("doctor.html", doctors=doctors)
@@ -228,5 +204,6 @@ def logout():
     session.pop("user", None)
     return redirect("/")
 
+# ---------------- RUN ----------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
