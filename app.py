@@ -11,7 +11,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# ---------------- LOAD MODEL ----------------
+# Load model
 model = pickle.load(open("model.pkl", "rb"))
 
 # ---------------- DATABASE ----------------
@@ -107,7 +107,6 @@ def predict():
 
     result = "Parkinson Detected" if prediction[0] == 1 else "Healthy"
 
-    # Save to DB
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
     cur.execute("""
@@ -125,7 +124,6 @@ def predict():
     conn.commit()
     conn.close()
 
-    # Store report
     session["report"] = {
         "Name": request.form["name"],
         "Age": request.form["age"],
@@ -138,7 +136,7 @@ def predict():
 
     return render_template("index.html", prediction_text=result, confidence=confidence)
 
-# ---------------- DOWNLOAD PDF ----------------
+# ---------------- DOWNLOAD ----------------
 @app.route("/download")
 def download():
     data = session.get("report")
@@ -178,26 +176,21 @@ def chat():
         reply = "Tremors are common in Parkinson’s disease."
     elif "treatment" in msg:
         reply = "Consult a neurologist."
-    elif "hello" in msg:
-        reply = "Hello! How can I help you?"
     else:
         reply = random.choice([
             "Please consult a doctor.",
-            "Provide more details.",
-            "Symptoms vary between patients."
+            "Provide more details."
         ])
 
     return {"response": reply}
 
-# ---------------- DOCTORS ----------------
+# ---------------- DOCTOR ----------------
 @app.route("/doctor")
 def doctor():
     doctors = [
         {"name": "Dr. Sharma", "city": "Delhi"},
-        {"name": "Dr. Patel", "city": "Mumbai"},
-        {"name": "Dr. Reddy", "city": "Hyderabad"}
+        {"name": "Dr. Patel", "city": "Mumbai"}
     ]
-
     return render_template("doctor.html", doctors=doctors)
 
 # ---------------- LOGOUT ----------------
